@@ -3,25 +3,6 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 mpl.rcParams.update(mpl.rcParamsDefault)
 import matplotlib.cm as cm
-a = np.loadtxt("w_g_bins.txt")
-
-b = np.loadtxt("w_g_freq.txt")
-
-a = a[:,:-1] # temporary remove last point of bins list. match dimension for plotting.
-
-
-d_1_1 = a [::3]
-d_1_2 = b [::3]
-d_2_1 = a [1::3]
-d_2_2 = b [1::3]
-g_1_1 = a [2::3]
-g_1_2 = b [2::3]
-#data written to file: Gradient histogram of D_real, histogram of D_fake, histogram of G_
-print (d_1_1.shape)
-#19550 / 25 (epoch ) = 782 histogram to merge for 1 epoch
-print (d_2_1.shape)
-print (g_1_1.shape)
-
 def merg_hist(bins_list, freq_list, n_bins = 10 ): # merg a list of histograms and combine into 1 histogram
     min_range = np.min(bins_list)
     max_range = np.max(bins_list)
@@ -44,60 +25,87 @@ def merg_hist(bins_list, freq_list, n_bins = 10 ): # merg a list of histograms a
     return repr_bins, freq
 
 
-epochs_d_1_1 = np.array(np.vsplit(d_1_1, 25))
-epochs_d_1_2 = np.array(np.vsplit(d_1_2, 25))
-epochs_d_2_1 = np.array(np.vsplit(d_2_1, 25))
-epochs_d_2_2 = np.array(np.vsplit(d_2_2, 25))
-epochs_g_1_1 = np.array(np.vsplit(g_1_1, 25))
-epochs_g_1_2 = np.array(np.vsplit(g_1_2, 25))
-bins_d_1 = []
-freq_d_1 =  []
-bins_d_2 = []
-freq_d_2 = []
-bins_g_1 = []
-freq_g_1 = []
-for i in range(25):
-    bins,freq = merg_hist(epochs_d_1_1[i], epochs_d_1_2[i] )
-    bins_d_1.append(bins)
-    freq_d_1.append(freq)
-    bins,freq = merg_hist(epochs_d_2_1[i], epochs_d_2_2[i] )
-    bins_d_2.append(bins)
-    freq_d_2.append(freq)
-    bins,freq = merg_hist(epochs_g_1_1[i], epochs_g_1_2[i] )
-    bins_g_1.append(bins)
-    freq_g_1.append(freq)
+colors = cm.YlGn(np.linspace(0, 1, 25))
 
-#print (bins_d_1)
-print ("plotting d1 ")
-colors = cm.YlGn(np.linspace(0, 1, len(bins_d_1)))
-for i in range(25):
-    if (i<=2 or i >= 22):
-        plt.plot(bins_d_1[i], freq_d_1[i],marker="+", color=colors[i], label="epoch_"+str(i))
+a = np.loadtxt("act_d_bins.txt")
+
+b = np.loadtxt("act_d_freq.txt")
+a = a[:15640]
+b = b[:15640]
+a = a[:,:-1] # temporary remove last point of bins list. match dimension for plotting.
+print("weight shapes")
+print (a.shape)
+print (b.shape)
+
+a = np.array(np.vsplit(a, 20))
+b = np.array(np.vsplit(b, 20))
+
+for i in range(20):
+    bins_,freq_ = merg_hist(a[i], b[i] )
+    if (i<=2 or i >= 17):
+        plt.plot(bins_, freq_,marker="+", color=colors[i], label="epoch_"+str(i))
     else :
-        plt.plot(bins_d_1[i], freq_d_1[i],marker="+", color=colors[i])
+        plt.plot(bins_, freq_,marker="+", color=colors[i])
 plt.legend(loc="upper left", ncol=1)
-plt.savefig ("d_1.pdf")
+plt.savefig ("act_g.pdf")
 plt.clf()
 
-print ("plotting d2 ")
-colors = cm.YlGn(np.linspace(0, 1, len(bins_d_2)))
-for i in range(25):
-    if (i<=2 or i >= 22):
-        plt.plot(bins_d_2[i], freq_d_2[i],marker="+", color=colors[i], label="epoch_"+str(i))
+a = np.loadtxt("act_g_bins.txt")
+
+b = np.loadtxt("act_g_freq.txt")
+a = a[:15640]
+b = b[:15640]
+a = a[:,:-1] # temporary remove last point of bins list. match dimension for plotting.
+
+a = np.array(np.vsplit(a, 20))
+b = np.array(np.vsplit(b, 20))
+
+for i in range(20):
+    bins_,freq_ = merg_hist(a[i], b[i] )
+    if (i<=2 or i >= 17):
+        plt.plot(bins_, freq_,marker="+", color=colors[i], label="epoch_"+str(i))
     else :
-        plt.plot(bins_d_2[i], freq_d_2[i],marker="+", color=colors[i])
+        plt.plot(bins_, freq_,marker="+", color=colors[i])
 plt.legend(loc="upper left", ncol=1)
-plt.savefig ("d_2.pdf")
+plt.savefig ("act_d.pdf") ##wrong naming
 plt.clf()
 
-print ("plotting g1 ")
-colors = cm.YlGn(np.linspace(0, 1, len(bins_g_1)))
-for i in range(25):
-    if (i<=2 or i >= 22):
-        plt.plot(bins_g_1[i], freq_g_1[i],marker="+", color=colors[i], label="epoch_"+str(i))
+a = np.loadtxt("w_bins.txt")
+
+b = np.loadtxt("w_freq.txt")
+
+a = a[:,:-1] # temporary remove last point of bins list. match dimension for plotting.
+
+print("weight shapes")
+print (a.shape)
+print (b.shape)
+g_weight_bins = a[::2]
+g_weight_freq = b[::2]
+d_weight_bins = a[1::2]
+d_weight_freq = b[1::2]
+
+
+g_weight_bins = np.array(np.vsplit(g_weight_bins, 20))
+g_weight_freq = np.array(np.vsplit(g_weight_freq, 20))
+d_weight_bins = np.array(np.vsplit(d_weight_bins, 20))
+d_weight_freq = np.array(np.vsplit(d_weight_freq, 20))
+
+for i in range(20):
+    bins_,freq_ = merg_hist(g_weight_bins[i], g_weight_freq[i] )
+    if (i<=2 or i >= 17):
+        plt.plot(bins_, freq_,marker="+", color=colors[i], label="epoch_"+str(i))
     else :
-        plt.plot(bins_g_1[i], freq_g_1[i],marker="+", color=colors[i])
+        plt.plot(bins_, freq_,marker="+", color=colors[i])
 plt.legend(loc="upper left", ncol=1)
-plt.savefig ("g_1.pdf")
+plt.savefig ("weight_g_.pdf") ##wrong naming
 plt.clf()
-#bins,freq = merg_hist(d_1_1[:2], d_1_2[:2] )
+
+for i in range(20):
+    bins_,freq_ = merg_hist(d_weight_bins[i], d_weight_freq[i] )
+    if (i<=2 or i >= 17):
+        plt.plot(bins_, freq_,marker="+", color=colors[i], label="epoch_"+str(i))
+    else :
+        plt.plot(bins_, freq_,marker="+", color=colors[i])
+plt.legend(loc="upper left", ncol=1)
+plt.savefig ("weight_d_.pdf") ##wrong naming
+plt.clf()

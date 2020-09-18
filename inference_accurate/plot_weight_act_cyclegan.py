@@ -64,7 +64,7 @@ print (a.shape)
 print (b.shape)
 
 
-for i in range(23):
+for i in range(24):
     freq_=b[i]
     temp_bins = a[i]
     bins_=(temp_bins[:-1] + temp_bins[1:])/2
